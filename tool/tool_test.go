@@ -44,6 +44,15 @@ func TestFileTools(t *testing.T) {
 	}
 }
 
+func TestInteractiveShellRequiresPermission(t *testing.T) {
+	for _, tl := range []CoreTool{NewShellOpen(), NewShellSend(), NewShellClose()} {
+		decision := tl.CheckPermissions(context.Background(), nil, permission.Context{Mode: permission.ModeDefault})
+		if decision.Behavior != permission.Ask {
+			t.Fatalf("%s permission = %s, want ask", tl.Name(), decision.Behavior)
+		}
+	}
+}
+
 func TestSearchTools(t *testing.T) {
 	t.Setenv("NORMA_DISABLE_RIPGREP", "1")
 	dir := t.TempDir()

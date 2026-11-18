@@ -26,7 +26,10 @@ func sessTool(name, desc string, schema map[string]any, readOnly bool, run func(
 		ReadOnly:   func(json.RawMessage) bool { return readOnly },
 		Concurrent: func(json.RawMessage) bool { return false },
 		Permissions: func(context.Context, json.RawMessage, permission.Context) permission.Decision {
-			return permission.Allowed()
+			if readOnly {
+				return permission.Allowed()
+			}
+			return permission.AskUser("use interactive shell tool " + name)
 		},
 		Run: run,
 	})
