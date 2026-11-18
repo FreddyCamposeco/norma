@@ -47,6 +47,8 @@ type ToolContext struct {
 	// DEBIAN_FRONTEND — see tool.nonInteractiveEnv), which override any value
 	// inherited for those four keys. Naming one here is how a host takes it back.
 	Env []string
+	// EnvIsolated excludes the parent process environment from subprocesses.
+	EnvIsolated bool
 }
 
 func (tc *ToolContext) progress(msg string) {

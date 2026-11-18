@@ -65,7 +65,7 @@ type ptySession struct {
 	lastOut  time.Time
 	exitedAt time.Time
 
-	readCur  int64 // tool-side read cursor (shell_read without since_cursor continues here)
+	readCur  int64         // tool-side read cursor (shell_read without since_cursor continues here)
 	notifyCh chan struct{} // pinged on new output
 	done     chan struct{} // closed when the process exits
 }
@@ -300,7 +300,7 @@ func (m *Manager) session(id string) (*ptySession, bool) {
 }
 
 // openSession starts an interactive program in a fresh PTY and begins its read loop.
-func (m *Manager) openSession(command, workDir string, env []string, rows, cols int, mode string, prompt *regexp.Regexp) (*ptySession, error) {
+func (m *Manager) openSession(command, workDir string, env []string, rows, cols int, mode string, prompt *regexp.Regexp, isolated ...bool) (*ptySession, error) {
 	if !ptySupported() {
 		return nil, fmt.Errorf("交互式 shell(PTY) 在当前平台不支持")
 	}
@@ -314,7 +314,7 @@ func (m *Manager) openSession(command, workDir string, env []string, rows, cols 
 	shell, flags := shellCmd()
 	cmd := exec.CommandContext(m.rootCtx, shell, append(flags, command)...)
 	cmd.Dir = workDir
-	cmd.Env = withEnv(env)
+	cmd.Env = withEnv(env, isolated...)
 	ptmx, err := startPTY(cmd, rows, cols)
 	if err != nil {
 		return nil, err

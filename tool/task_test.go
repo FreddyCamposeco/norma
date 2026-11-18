@@ -337,6 +337,28 @@ func TestWithEnvNonInteractiveDefaults(t *testing.T) {
 	}
 }
 
+func TestIsolatedEnvAndShells(t *testing.T) {
+	t.Setenv("ARTEX_TEST_SECRET", "server-only")
+	allowed := []string{"ARTEX_TEST_ALLOWED=yes"}
+	env := IsolatedEnv(allowed)
+	if countKey(env, "ARTEX_TEST_SECRET") != 0 || envValue(env, "ARTEX_TEST_ALLOWED") != "yes" {
+		t.Fatal("isolated environment leaked a server variable or lost an explicit variable")
+	}
+	if _, ok := os.LookupEnv("PATH"); ok && envValue(env, "PATH") == "" {
+		t.Fatal("isolated environment lost PATH")
+	}
+	command := `if [ -z "${ARTEX_TEST_SECRET+x}" ] && [ "$ARTEX_TEST_ALLOWED" = yes ]; then echo isolated; else echo leaked; fi`
+	for _, tc := range []*ToolContext{
+		{Env: allowed, EnvIsolated: true},
+		{Env: allowed, EnvIsolated: true, Tasks: newTestManager(t)},
+	} {
+		res := runTC(t, NewBash(), tc, map[string]any{"command": command})
+		if res.IsError || !strings.Contains(res.Flatten(), "isolated") {
+			t.Fatalf("shell environment was not isolated: %q", res.Flatten())
+		}
+	}
+}
+
 // envValue reads a key the way a child process would: the FIRST matching entry.
 func envValue(env []string, key string) string {
 	for _, kv := range env {

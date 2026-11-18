@@ -137,10 +137,11 @@ func NewShellOpen() CoreTool {
 		}
 		workDir := ""
 		var env []string
+		isolated := false
 		if tc != nil {
-			workDir, env = tc.WorkingDir, tc.Env
+			workDir, env, isolated = tc.WorkingDir, tc.Env, tc.EnvIsolated
 		}
-		s, err := m.openSession(a.Command, workDir, env, a.Rows, a.Cols, mode, pr)
+		s, err := m.openSession(a.Command, workDir, env, a.Rows, a.Cols, mode, pr, isolated)
 		if err != nil {
 			return Errorf("开启会话失败: " + err.Error()), nil
 		}

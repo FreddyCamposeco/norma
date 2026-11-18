@@ -5,6 +5,8 @@ import (
 	"io"
 	"os"
 	"os/exec"
+
+	"github.com/FreddyCamposeco/norma/tool"
 )
 
 // stdioCloser shuts down a spawned MCP server process and its pipes.
@@ -30,8 +32,24 @@ func (s *stdioCloser) Close() error {
 // env holds extra environment variables (e.g. API tokens an MCP server needs)
 // applied on top of the parent process environment; pass nil for none.
 func NewStdioClient(ctx context.Context, server, command string, env map[string]string, args ...string) (*Client, error) {
+	return newStdioClient(ctx, server, command, env, false, args...)
+}
+
+// NewStdioClientIsolated starts an MCP server without inheriting host secrets.
+// Only safe process basics and the server's explicitly configured env are passed.
+func NewStdioClientIsolated(ctx context.Context, server, command string, env map[string]string, args ...string) (*Client, error) {
+	return newStdioClient(ctx, server, command, env, true, args...)
+}
+
+func newStdioClient(ctx context.Context, server, command string, env map[string]string, isolated bool, args ...string) (*Client, error) {
 	cmd := exec.Command(command, args...)
-	if len(env) > 0 {
+	if isolated {
+		extra := make([]string, 0, len(env))
+		for k, v := range env {
+			extra = append(extra, k+"="+v)
+		}
+		cmd.Env = tool.IsolatedEnv(extra)
+	} else if len(env) > 0 {
 		cmd.Env = os.Environ()
 		for k, v := range env {
 			cmd.Env = append(cmd.Env, k+"="+v)

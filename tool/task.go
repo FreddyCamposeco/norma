@@ -151,7 +151,8 @@ type SpawnSpec struct {
 	WorkingDir  string
 	// Env holds extra "KEY=VALUE" entries layered onto the process environment for
 	// this command (see ToolContext.Env). Empty still applies nonInteractiveEnv.
-	Env []string
+	Env         []string
+	EnvIsolated bool
 }
 
 // nonInteractiveEnv are defaults every spawned shell gets, whether or not the
@@ -180,7 +181,7 @@ var nonInteractiveEnv = []string{
 // (mcp/stdio.go relies on exec's last-wins dedup and is fine as it is.)
 //
 // The result is never nil — the defaults always apply.
-func withEnv(extra []string) []string {
+func withEnv(extra []string, isolated ...bool) []string {
 	extraKeys := make(map[string]bool, len(extra))
 	for _, kv := range extra {
 		if k := envKey(kv); k != "" {
@@ -197,6 +198,14 @@ func withEnv(extra []string) []string {
 		}
 	}
 	base := os.Environ()
+	if len(isolated) > 0 && isolated[0] {
+		base = nil
+		for _, key := range []string{"PATH", "HOME", "TMPDIR", "TEMP", "TMP", "LANG", "LC_ALL", "TZ", "TERM", "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT"} {
+			if value, ok := os.LookupEnv(key); ok {
+				base = append(base, key+"="+value)
+			}
+		}
+	}
 	out := make([]string, 0, len(base)+len(nonInteractiveEnv)+len(extra))
 	for _, kv := range base {
 		if k := envKey(kv); k != "" && drop[k] {
@@ -212,6 +221,9 @@ func withEnv(extra []string) []string {
 	}
 	return append(out, extra...)
 }
+
+// IsolatedEnv returns a minimal process environment plus explicit host values.
+func IsolatedEnv(extra []string) []string { return withEnv(extra, true) }
 
 // envKey extracts the KEY of a "KEY=value" entry ("" when malformed).
 func envKey(kv string) string {
@@ -358,7 +370,7 @@ func (m *Manager) Spawn(spec SpawnSpec) (*Task, error) {
 	shell, flags := shellCmd()
 	cmd := exec.CommandContext(m.rootCtx, shell, append(flags, spec.Command)...)
 	cmd.Dir = spec.WorkingDir
-	cmd.Env = withEnv(spec.Env)
+	cmd.Env = withEnv(spec.Env, spec.EnvIsolated)
 	cmd.Stdout = f
 	cmd.Stderr = f
 	setDetached(cmd)

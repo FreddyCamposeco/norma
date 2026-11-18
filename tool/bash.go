@@ -109,7 +109,7 @@ func runBash(ctx context.Context, input json.RawMessage, tc *ToolContext) (Resul
 // runBashManaged runs the command through the task manager, supporting explicit
 // background launch and timeout auto-backgrounding.
 func runBashManaged(ctx context.Context, tc *ToolContext, command string, timeout time.Duration, explicitBG bool) (Result, error) {
-	spec := SpawnSpec{Command: command, Kind: KindBash, WorkingDir: tc.WorkingDir, Description: short(command), Env: tc.Env}
+	spec := SpawnSpec{Command: command, Kind: KindBash, WorkingDir: tc.WorkingDir, Description: short(command), Env: tc.Env, EnvIsolated: tc.EnvIsolated}
 
 	if explicitBG {
 		t, err := tc.Tasks.Spawn(spec)
@@ -180,7 +180,7 @@ func runBashSync(ctx context.Context, tc *ToolContext, command string, timeout t
 	cmd := exec.CommandContext(cctx, shell, append(flags, command)...)
 	if tc != nil {
 		cmd.Dir = tc.WorkingDir
-		cmd.Env = withEnv(tc.Env)
+		cmd.Env = withEnv(tc.Env, tc.EnvIsolated)
 	} else {
 		cmd.Env = withEnv(nil)
 	}

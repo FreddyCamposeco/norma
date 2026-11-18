@@ -70,7 +70,8 @@ type QueryInput struct {
 	// environments (foreground + background). Empty still applies the
 	// non-interactive defaults (PAGER/GIT_PAGER/SYSTEMD_PAGER/DEBIAN_FRONTEND);
 	// see tool.ToolContext.Env.
-	BashEnv []string
+	BashEnv         []string
+	BashEnvIsolated bool
 
 	// Permission policy.
 	PermissionMode     permission.Mode
