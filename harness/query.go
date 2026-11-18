@@ -9,9 +9,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/Autumn-27/norma/llm"
-	"github.com/Autumn-27/norma/permission"
-	"github.com/Autumn-27/norma/tool"
+	"github.com/FreddyCamposeco/norma/llm"
+	"github.com/FreddyCamposeco/norma/permission"
+	"github.com/FreddyCamposeco/norma/tool"
 )
 
 // QueryInput is a fully-resolved request to run the loop.

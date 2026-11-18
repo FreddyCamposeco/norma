@@ -9,12 +9,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Autumn-27/norma/agentcore"
-	"github.com/Autumn-27/norma/harness"
-	"github.com/Autumn-27/norma/llm"
-	"github.com/Autumn-27/norma/permission"
-	"github.com/Autumn-27/norma/subagent"
-	"github.com/Autumn-27/norma/tool"
+	"github.com/FreddyCamposeco/norma/agentcore"
+	"github.com/FreddyCamposeco/norma/harness"
+	"github.com/FreddyCamposeco/norma/llm"
+	"github.com/FreddyCamposeco/norma/permission"
+	"github.com/FreddyCamposeco/norma/subagent"
+	"github.com/FreddyCamposeco/norma/tool"
 )
 
 func main() {

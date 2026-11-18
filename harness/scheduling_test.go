@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/norma/llm"
-	"github.com/Autumn-27/norma/permission"
-	"github.com/Autumn-27/norma/tool"
+	"github.com/FreddyCamposeco/norma/llm"
+	"github.com/FreddyCamposeco/norma/permission"
+	"github.com/FreddyCamposeco/norma/tool"
 )
 
 // concurrencyProbe records the peak number of simultaneous executions.

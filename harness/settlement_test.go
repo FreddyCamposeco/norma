@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Autumn-27/norma/llm"
-	"github.com/Autumn-27/norma/permission"
-	"github.com/Autumn-27/norma/tool"
+	"github.com/FreddyCamposeco/norma/llm"
+	"github.com/FreddyCamposeco/norma/permission"
+	"github.com/FreddyCamposeco/norma/tool"
 )
 
 // On hitting MaxTurns with a Settlement configured, the loop injects the wrap-up

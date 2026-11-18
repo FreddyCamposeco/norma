@@ -3,10 +3,10 @@ package agentcore
 import (
 	"testing"
 
-	"github.com/Autumn-27/norma/compaction"
-	"github.com/Autumn-27/norma/harness"
-	"github.com/Autumn-27/norma/llm"
-	"github.com/Autumn-27/norma/tool"
+	"github.com/FreddyCamposeco/norma/compaction"
+	"github.com/FreddyCamposeco/norma/harness"
+	"github.com/FreddyCamposeco/norma/llm"
+	"github.com/FreddyCamposeco/norma/tool"
 )
 
 // noa is opt-in: a host that never calls noaadapter.Enable must get exactly the
